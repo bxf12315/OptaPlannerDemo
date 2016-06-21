@@ -1,0 +1,32 @@
+
+package example;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScoreHolder;
+import example.MeetingRoom;
+import example.MeetingRquest;
+import example.MeetingRoomSolution;
+
+global HardSoftScoreHolder scoreHolder;
+
+/** capacity caclulte **/
+rule "capacity caclulte"
+    when 
+        $meetingRoom : example.MeetingRoom( $capacity : capacity )
+        $attenderNumberSummary : Number(intValue > $capacity) from accumulate(
+                MeetingRquest(
+                        meetingRome == $meetingRoom,
+                        $attenderNumber : attenderNumber),
+                        sum($attenderNumber)
+        )
+        
+        
+    then scoreHolder.addHardConstraintMatch(kcontext,$capacity-$attenderNumberSummary.intValue());
+    
+end
+
+rule "set meeting room"
+    when
+        $meetingRoom : example.MeetingRoom($capacity : capacity)
+        exists MeetingRquest(meetingRome == $meetingRoom)
+    then
+        scoreHolder.addSoftConstraintMatch(kcontext,  - $capacity);
+end
