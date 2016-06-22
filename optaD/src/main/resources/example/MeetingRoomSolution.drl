@@ -23,10 +23,3 @@ rule "capacity caclulte"
     
 end
 
-rule "set meeting room"
-    when
-        $meetingRoom : example.MeetingRoom($capacity : capacity)
-        exists MeetingRquest(meetingRome == $meetingRoom)
-    then
-        scoreHolder.addSoftConstraintMatch(kcontext,  - $capacity);
-end
